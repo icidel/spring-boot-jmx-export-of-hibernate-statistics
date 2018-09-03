@@ -1,11 +1,11 @@
 package com.example.hibernatestatsdemo;
 
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceException;
 
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.stat.CollectionStatistics;
 import org.hibernate.stat.EntityStatistics;
-import org.hibernate.stat.NaturalIdCacheStatistics;
 import org.hibernate.stat.QueryStatistics;
 import org.hibernate.stat.SecondLevelCacheStatistics;
 import org.hibernate.stat.Statistics;
@@ -15,7 +15,7 @@ import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.stereotype.Component;
 
-@Component("hibernateStatisticsBean")
+@Component
 @ManagedResource("Hibernate:application=Statistics")
 public class HibernateStatisticsMBean {
 
@@ -41,17 +41,20 @@ public class HibernateStatisticsMBean {
 
 	@ManagedOperation
 	public EntityStatistics getEntityStatistics(String entityName) {
-		return stats.getEntityStatistics(entityName);
+		try {
+			return stats.getEntityStatistics(entityName);
+		} catch (PersistenceException e) {
+			return null;
+		}
 	}
 
 	@ManagedOperation
 	public CollectionStatistics getCollectionStatistics(String role) {
-		return stats.getCollectionStatistics(role);
-	}
-
-	@ManagedOperation
-	public NaturalIdCacheStatistics getNaturalIdCacheStatistics(String regionName) {
-		return stats.getNaturalIdCacheStatistics(regionName);
+		try {
+			return stats.getCollectionStatistics(role);
+		} catch (PersistenceException e) {
+			return null;
+		}
 	}
 
 	@ManagedOperation
